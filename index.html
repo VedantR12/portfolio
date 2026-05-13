@@ -1020,6 +1020,116 @@
       z-index: 10;
       pointer-events: auto;
     }
+
+    /* =========================================
+   CLEAN RESPONSIVE FIX
+========================================= */
+
+@media (max-width: 768px) {
+
+  body {
+    cursor: auto;
+  }
+
+  #cur,
+  #cur-ring,
+  #phase-dots {
+    display: none;
+  }
+
+  nav {
+    padding: 16px 18px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .frame {
+    background-position: center center;
+  }
+
+  .t1 {
+    width: 100%;
+    padding: 0 18px;
+    bottom: 14%;
+  }
+
+  .t1 .name {
+    font-size: clamp(54px, 14vw, 88px);
+    letter-spacing: 2px;
+    line-height: .95;
+  }
+
+  .t1 .tagline {
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+
+  .t2,
+  .t3 {
+    left: 20px;
+    right: 20px;
+    width: auto;
+  }
+
+  .t2 .word,
+  .t3 .word {
+    font-size: clamp(30px, 8vw, 48px);
+  }
+
+  .t3 {
+    text-align: left;
+  }
+
+  .t3 .sub {
+    justify-content: flex-start;
+  }
+
+  .t3 .sub::after {
+    display: none;
+  }
+
+  .t4 {
+    width: 100%;
+    padding: 0 20px;
+    white-space: normal;
+  }
+
+  .t4 .cta-main {
+    font-size: clamp(46px, 12vw, 74px);
+    letter-spacing: 2px;
+  }
+
+  .t4 .cta-links {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .projects-section,
+  .skills-section {
+    padding: 70px 20px;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .p-card {
+    padding: 24px;
+  }
+
+  .section-heading {
+    font-size: clamp(48px, 12vw, 72px);
+    margin-bottom: 40px;
+  }
+
+  footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
   </style>
 </head>
 
