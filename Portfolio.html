@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vedant Rode — Full Stack Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080808;
+      --orange: #ff5e1a;
+      --orange-dim: rgba(255, 94, 26, 0.15);
+      --blue: #0d1f3c;
+      --white: #ede8e0;
+      --muted: rgba(237, 232, 224, 0.4);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.07);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+      height: 100%;
+    }
+
+    /* ─── CURSOR ─── */
+    #cur {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--orange);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 100000;
+      transform: translate(-50%, -50%);
+      transition: width .2s, height .2s;
+    }
+
+    #cur-ring {
+      position: fixed;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 94, 26, .45);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width .25s, height .25s;
+    }
+
+    body:has(a:hover) #cur,
+    body:has(button:hover) #cur {
+      width: 16px;
+      height: 16px;
+    }
+
+    body:has(a:hover) #cur-ring,
+    body:has(button:hover) #cur-ring {
+      width: 48px;
+      height: 48px;
+    }
+
+    /* ─── PROGRESS ─── */
+    #prog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      background: var(--orange);
+      z-index: 300;
+      width: 0%;
+      box-shadow: 0 0 12px var(--orange);
+      transition: width .08s linear;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(8, 8, 8, .85) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: var(--white);
+      text-decoration: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-links a {
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--orange);
+    }
+
+    .nav-cta {
+      position: relative;
+      z-index: 1;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      padding: 10px 22px;
+      border: 1px solid rgba(255, 94, 26, .4);
+      transition: all .3s;
+    }
+
+    .nav-cta:hover {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #000;
+    }
+
+    @media(max-width:768px) {
+      .nav-links {
+        display: none;
+      }
+
+      nav {
+        padding: 20px 24px;
+      }
+    }
+
+    /* ─── SCROLL SECTION ─── */
+    #scroll-section {
+      position: relative;
+      height: 500vh;
+    }
+
+    .sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* ─── FRAMES ─── */
+    .frame {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .frame.active {
+      opacity: 1;
+    }
+
+    /* Ken Burns — each frame gets unique animation */
+    .frame:nth-child(1) {
+      animation: kb1 8s ease-in-out infinite alternate;
+    }
+
+    .frame:nth-child(2) {
+      animation: kb2 9s ease-in-out infinite alternate;
+    }
+
+    .frame:nth-child(3) {
+      animation: kb3 10s ease-in-out infinite alternate;
+    }
+
+    .frame:nth-child(4) {
+      animation: kb4 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes kb1 {
+      from {
+        transform: scale(1.0) translateX(0px)
+      }
+
+      to {
+        transform: scale(1.08) translateX(-12px)
+      }
+    }
+
+    @keyframes kb2 {
+      from {
+        transform: scale(1.05) translateY(0px)
+      }
+
+      to {
+        transform: scale(1.0) translateY(-15px)
+      }
+    }
+
+    @keyframes kb3 {
+      from {
+        transform: scale(1.0) translateX(0px) translateY(0px)
+      }
+
+      to {
+        transform: scale(1.07) translateX(10px) translateY(-8px)
+      }
+    }
+
+    @keyframes kb4 {
+      from {
+        transform: scale(1.08) translateX(-8px)
+      }
+
+      to {
+        transform: scale(1.0) translateX(8px)
+      }
+    }
+
+    /* gradient overlay on frames */
+    .frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, rgba(8, 8, 8, .75) 0%, transparent 35%, transparent 65%, rgba(8, 8, 8, .6) 100%),
+        linear-gradient(to top, rgba(8, 8, 8, .95) 0%, rgba(8, 8, 8, .3) 35%, transparent 60%),
+        linear-gradient(to bottom, rgba(8, 8, 8, .5) 0%, transparent 20%);
+    }
+
+    /* ─── AMBIENT LIGHT ORBS ─── */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+
+    .orb.active {
+      opacity: 1;
+    }
+
+    #orb-orange {
+      width: 500px;
+      height: 500px;
+      background: rgba(255, 94, 26, .18);
+      bottom: -100px;
+      right: -50px;
+      animation: orbFloat1 6s ease-in-out infinite;
+    }
+
+    #orb-blue {
+      width: 400px;
+      height: 400px;
+      background: rgba(13, 31, 60, .6);
+      top: -80px;
+      left: -80px;
+      animation: orbFloat2 8s ease-in-out infinite;
+    }
+
+    #orb-orange2 {
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 94, 26, .12);
+      top: 30%;
+      left: 20%;
+      animation: orbFloat3 7s ease-in-out infinite;
+    }
+
+    @keyframes orbFloat1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1)
+      }
+
+      50% {
+        transform: translate(-30px, -40px) scale(1.1)
+      }
+    }
+
+    @keyframes orbFloat2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1)
+      }
+
+      50% {
+        transform: translate(40px, 30px) scale(1.15)
+      }
+    }
+
+    @keyframes orbFloat3 {
+
+      0%,
+      100% {
+        transform: translate(0, 0)
+      }
+
+      33% {
+        transform: translate(20px, -20px)
+      }
+
+      66% {
+        transform: translate(-20px, 10px)
+      }
+    }
+
+    /* ─── PARTICLES ─── */
+    #particles {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--orange);
+      border-radius: 50%;
+      opacity: 0;
+      animation: particleRise var(--dur) ease-in var(--delay) infinite;
+    }
+
+    @keyframes particleRise {
+      0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) scale(0);
+      }
+
+      10% {
+        opacity: .7;
+        transform: translateY(-20px) translateX(var(--dx)) scale(1);
+      }
+
+      80% {
+        opacity: .3;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-120px) translateX(calc(var(--dx)*2)) scale(.3);
+      }
+    }
+
+    /* ─── OVERLAY TEXTS ─── */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .text-block {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 51;
+      transition: opacity 0.5s ease;
+    }
+
+    .text-block.in {
+      opacity: 1;
+    }
+
+    /* Phase 1 — bottom center, giant name */
+    .t1 {
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: 100%;
+    }
+
+    .t1 .name-wrap {
+      overflow: hidden;
+      display: block;
+    }
+
+    .t1 .name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 11vw, 148px);
+      line-height: .92;
+      letter-spacing: 8px;
+      color: var(--white);
+      display: block;
+      transform: translateY(110%);
+      transition: transform .9s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .t1.in .name {
+      transform: translateY(0);
+    }
+
+    .t1 .tagline {
+      font-size: clamp(10px, 1.2vw, 13px);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-top: 14px;
+      display: block;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .6s .4s, transform .6s .4s;
+      font-weight: 900;
+    }
+
+    .t1.in .tagline {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Phase 2 — left */
+    .t2 {
+      left: 6%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .t2 .line {
+      overflow: hidden;
+      display: block;
+    }
+
+    .t2 .word {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px, 4.5vw, 68px);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--white);
+      display: block;
+      transform: translateX(-100%);
+      transition: transform .8s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .t2 .word.accent {
+      color: var(--orange);
+    }
+
+    .t2.in .word {
+      transform: translateX(0);
+    }
+
+    .t2 .word:nth-child(1) {
+      transition-delay: .0s;
+    }
+
+    .t2 .word:nth-child(2) {
+      transition-delay: .1s;
+    }
+
+    .t2 .word:nth-child(3) {
+      transition-delay: .2s;
+    }
+
+    .t2 .sub {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity .5s .5s;
+    }
+
+    .t2.in .sub {
+      opacity: 1;
+    }
+
+    .t2 .sub::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--orange);
+    }
+
+    /* Phase 3 — right */
+    .t3 {
+      right: 6%;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: right;
+    }
+
+    .t3 .line {
+      overflow: hidden;
+      display: block;
+    }
+
+    .t3 .word {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px, 4.5vw, 68px);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--white);
+      display: block;
+      transform: translateX(100%);
+      transition: transform .8s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .t3 .word.accent {
+      color: var(--orange);
+    }
+
+    .t3.in .word {
+      transform: translateX(0);
+    }
+
+    .t3 .word:nth-child(1) {
+      transition-delay: .0s;
+    }
+
+    .t3 .word:nth-child(2) {
+      transition-delay: .12s;
+    }
+
+    .t3 .word:nth-child(3) {
+      transition-delay: .24s;
+    }
+
+    .t3 .sub {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity .5s .5s;
+    }
+
+    .t3.in .sub {
+      opacity: 1;
+    }
+
+    .t3 .sub::after {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--orange);
+    }
+
+    /* Phase 4 — center, CTA */
+    .t4 {
+      left: 50%;
+      bottom: 12%;
+      transform: translateX(-50%);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .t4 .cta-main {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 9vw, 130px);
+      letter-spacing: 10px;
+      color: var(--white);
+      line-height: .95;
+      display: block;
+      overflow: hidden;
+    }
+
+    .t4 .cta-inner {
+      display: block;
+      transform: translateY(110%);
+      transition: transform 1s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .t4.in .cta-inner {
+      transform: translateY(0);
+    }
+
+    .t4 .cta-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 24px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .5s .5s, transform .5s .5s;
+      pointer-events: all;
+    }
+
+    .t4.in .cta-links {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cta-btn {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      padding: 12px 28px;
+      border: 1px solid rgba(255, 94, 26, .4);
+      transition: all .3s;
+      display: inline-block;
+    }
+
+    .cta-btn.fill {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .cta-btn:hover {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #000;
+    }
+
+    .cta-btn.fill:hover {
+      opacity: .85;
+    }
+
+    /* ─── SCROLL HINT ─── */
+    #scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: opacity .5s;
+    }
+
+    #scroll-hint span {
+      font-size: 9px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(237, 232, 224, .25);
+    }
+
+    .s-line {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, var(--orange), transparent);
+      animation: sPulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes sPulse {
+
+      0%,
+      100% {
+        opacity: .3;
+        transform: scaleY(1)
+      }
+
+      50% {
+        opacity: 1;
+        transform: scaleY(1.15)
+      }
+    }
+
+    /* ─── PHASE DOTS ─── */
+    #phase-dots {
+      position: fixed;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(237, 232, 224, .2);
+      border: 1px solid rgba(237, 232, 224, .15);
+      transition: all .3s;
+    }
+
+    .dot.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      box-shadow: 0 0 10px var(--orange);
+      transform: scale(1.6);
+    }
+
+    /* ─── SCANLINE effect ─── */
+    .scanline {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .03) 2px, rgba(0, 0, 0, .03) 4px);
+      animation: scanMove 8s linear infinite;
+    }
+
+    @keyframes scanMove {
+      0% {
+        background-position: 0 0
+      }
+
+      100% {
+        background-position: 0 100px
+      }
+    }
+
+    /* ─── SECTIONS BELOW ─── */
+    section {
+      position: relative;
+      background: var(--bg);
+    }
+
+    .projects-section {
+      padding: 120px 6% 80px;
+    }
+
+    .section-eyebrow {
+      font-size: 10px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 16px;
+    }
+
+    .section-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 8vw, 110px);
+      letter-spacing: 4px;
+      line-height: .9;
+      margin-bottom: 72px;
+      color: var(--white);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media(max-width:768px) {
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .p-card {
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      padding: 40px 36px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .3s, transform .4s cubic-bezier(.16, 1, .3, 1);
+      backdrop-filter: blur(10px);
+    }
+
+    .p-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 94, 26, .07) 0%, transparent 55%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .p-card:hover::before {
+      opacity: 1;
+    }
+
+    .p-card:hover {
+      border-color: rgba(255, 94, 26, .25);
+      transform: translateY(-6px);
+    }
+
+    /* animated border on hover */
+    .p-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: var(--orange);
+      width: 0;
+      transition: width .4s ease;
+      box-shadow: 0 0 8px var(--orange);
+    }
+
+    .p-card:hover::after {
+      width: 100%;
+    }
+
+    .p-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 80px;
+      color: rgba(255, 94, 26, .06);
+      position: absolute;
+      top: 16px;
+      right: 28px;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .p-tag {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 14px;
+    }
+
+    .p-name {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(22px, 2.5vw, 34px);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+
+    .p-desc {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .p-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgba(255, 94, 26, .35);
+      transition: color .3s, border-color .3s;
+    }
+
+    .p-link:hover {
+      color: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .p-link svg {
+      transition: transform .3s;
+    }
+
+    .p-link:hover svg {
+      transform: translate(3px, -3px);
+    }
+
+    /* ─── SKILLS ─── */
+    .skills-section {
+      padding: 80px 6% 120px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .skills-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 48px;
+    }
+
+    .skill {
+      padding: 9px 20px;
+      border: 1px solid var(--card-border);
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: all .3s;
+      background: var(--card-bg);
+      animation: skillFloat 0s ease-in-out infinite alternate;
+    }
+
+    .skill:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: rgba(255, 94, 26, .05);
+      transform: translateY(-2px);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 56px 6%;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .f-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 4px;
+      color: var(--white);
+    }
+
+    .f-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .f-links a {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .3s;
+    }
+
+    .f-links a:hover {
+      color: var(--orange);
+    }
+
+    .f-copy {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(237, 232, 224, .18);
+    }
+
+    /* ─── GRAIN OVERLAY ─── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9990;
+      opacity: .35;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* reveal on scroll for sections */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* FIX PROJECT LINKS */
+    .frame,
+    .scanline,
+    .orb,
+    #particles {
+      pointer-events: none;
+    }
+
+    .projects-section,
+    .projects-grid,
+    .p-card,
+    .p-link {
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="cur"></div>
+  <div id="cur-ring"></div>
+  <div id="prog"></div>
+
+  <nav>
+    <a href="#" class="nav-logo">VR</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Work</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="https://github.com/VedantR12" target="_blank">Github</a></li>
+      <li><a href="https://www.linkedin.com/in/vedant-rode-13615a239/" target="_blank">LinkedIn</a></li>
+    </ul>
+    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=vedant.rode.2005@gmail.com" target="_blank" class="cta-btn fill">
+      Hire Me
+    </a>
+  </nav>
+
+  <div id="scroll-section">
+    <div class="sticky" id="sticky">
+
+      <!-- ambient orbs -->
+      <div class="orb active" id="orb-blue"></div>
+      <div class="orb active" id="orb-orange"></div>
+      <div class="orb" id="orb-orange2"></div>
+
+      <!-- frames -->
+      <div class="frame active" id="f1" style="background-image:url('frame1.png')"></div>
+      <div class="frame" id="f2" style="background-image:url('frame2.png')"></div>
+      <div class="frame" id="f3" style="background-image:url('frame3.png')"></div>
+      <div class="frame" id="f4" style="background-image:url('frame4.png')"></div>
+
+      <!-- scanline -->
+      <div class="scanline"></div>
+
+      <!-- particles -->
+      <div id="particles"></div>
+
+      <!-- text overlays -->
+      <div class="overlay">
+
+        <div class="text-block t1 in" id="t1">
+          <span class="name-wrap"><span class="name">Vedant Rode</span></span>
+          <span class="tagline">Student by day &nbsp;·&nbsp; Coder by night</span>
+        </div>
+
+        <div class="text-block t2" id="t2">
+          <span class="line"><span class="word">I build</span></span>
+          <span class="line"><span class="word">things that</span></span>
+          <span class="line"><span class="word accent">matter.</span></span>
+          <div class="sub">Full Stack Developer</div>
+        </div>
+
+        <div class="text-block t3" id="t3">
+          <span class="line"><span class="word">Focused.</span></span>
+          <span class="line"><span class="word">Driven.</span></span>
+          <span class="line"><span class="word accent">Precise.</span></span>
+          <div class="sub">From idea to production</div>
+        </div>
+
+        <div class="text-block t4" id="t4">
+          <span class="cta-main"><span class="cta-inner">Let's Create</span></span>
+          <span class="cta-main" style="font-size:clamp(28px,5vw,72px);letter-spacing:6px;color:var(--orange)"><span
+              class="cta-inner" style="transition-delay:.1s">Something.</span></span>
+          <div class="cta-links">
+            <a href="https://www.linkedin.com/in/vedant-rode-13615a239/" class="cta-btn">LinkedIn</a>
+            <a href="https://github.com/VedantR12" target="_blank" class="cta-btn">GitHub</a>
+            <a href="https://www.instagram.com/scenekyahaivedant/" class="cta-btn">Instagram</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- scroll hint -->
+      <div id="scroll-hint">
+        <div class="s-line"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- phase dots -->
+  <div id="phase-dots">
+    <div class="dot active" data-phase="0"></div>
+    <div class="dot" data-phase="1"></div>
+    <div class="dot" data-phase="2"></div>
+    <div class="dot" data-phase="3"></div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section class="projects-section" id="projects">
+    <div class="reveal">
+      <div class="section-eyebrow">Selected Work</div>
+      <div class="section-heading">Things I've<br>Built.</div>
+      <P style="margin-bottom: 20px; opacity: 0.7; color: grey;">NOTE: These website are hosted on Render free tier. So
+        backend might be asleep. it would take some time to wake ther servers. </P>
+    </div>
+    <div class="projects-grid">
+
+      <div class="p-card reveal" onmousemove="glow(event,this)">
+        <div class="p-num">01</div>
+        <div class="p-tag">AI · Food Tech · Python</div>
+        <div class="p-name">Fi-Spec</div>
+        <div class="p-desc">AI-powered packaged food analyzer. Scan barcodes, decode ingredients and additives, get
+          instant health insights.</div>
+        <a href="https://fispec.vercel.app/" target="_blank" class="p-link">View Project <svg width="11" height="11"
+            viewBox="0 0 12 12" fill="none">
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg></a>
+      </div>
+
+      <div class="p-card reveal" onmousemove="glow(event,this)" style="transition-delay:.2s">
+        <div class="p-num">02</div>
+        <div class="p-tag">Persona Mimicking · ai · FastAPI</div>
+        <div class="p-name">Projekt Girlfriend</div>
+        <div class="p-desc">An LLM driven platform for persona mimicking. Users can caht to their loved ones here.</div>
+        <a href="https://projektgf.netlify.app/" target="_blank" class="p-link">View Project <svg width="11" height="11"
+            viewBox="0 0 12 12" fill="none">
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg></a>
+      </div>
+
+      <div class="p-card reveal" onmousemove="glow(event,this)" style="transition-delay:.2s">
+        <div class="p-num">03</div>
+        <div class="p-tag">Civic Tech · Maps · FastAPI</div>
+        <div class="p-name">SmartCivic</div>
+        <div class="p-desc">Citizen complaint portal with interactive maps, photo uploads, and real-time status
+          tracking. Bridging the gap between citizens and city administration.</div>
+        <a href="https://smartcivic101.netlify.app" target="_blank" class="p-link">View Project <svg width="11"
+            height="11" viewBox="0 0 12 12" fill="none">
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg></a>
+      </div>
+
+      <div class="p-card reveal" onmousemove="glow(event,this)" style="transition-delay:.15s">
+        <div class="p-num">04</div>
+        <div class="p-tag">Finance · React · API</div>
+        <div class="p-name">Spendly</div>
+        <div class="p-desc">Smart expense tracker with live running totals and real-time currency conversion. Track
+          spending across multiple currencies with a clean, snappy interface.</div>
+        <a href="https://spendly101.vercel.app/" target="_blank" class="p-link">View Project <svg width="11" height="11"
+            viewBox="0 0 12 12" fill="none">
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg></a>
+      </div>
+
+      <div class="p-card reveal" onmousemove="glow(event,this)" style="transition-delay:.1s">
+        <div class="p-num">05</div>
+        <div class="p-tag">Pet Chatbot · ESP32 · LLM</div>
+        <div class="p-name">Odin</div>
+        <div class="p-desc">A physical chatbot with facial expressions. It can chat, sing, browse internet and gives
+          various kind of information. Tells time, weather, and much more. (Prototype)</div>
+        <a href="https://github.com/VedantR12/odin" target="_blank" class="p-link">View Project <svg width="11"
+            height="11" viewBox="0 0 12 12" fill="none">
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg></a>
+      </div>
+
+      <div class="p-card reveal" onmousemove="glow(event,this)" style="transition-delay:.1s">
+        <div class="p-num">06</div>
+        <div class="p-tag">Maps · Python · React</div>
+        <div class="p-name">Sazon</div>
+        <div class="p-desc">Under development.</div>
+        <a href="https://github.com/VedantR12/sazon" target="_blank" class="p-link">View Project <svg width="11"
+            height="11" viewBox="0 0 12 12" fill="none">
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg></a>
+      </div>
+
+      <div class="p-card reveal" onmousemove="glow(event,this)" style="transition-delay:.1s">
+        <div class="p-num">07</div>
+        <div class="p-tag">Marketplace · React · Node</div>
+        <div class="p-name">CutseyCode</div>
+        <div class="p-desc">Digital marketplace for premium website templates built by me. Curated, clean, ready to
+          deploy — for developers who refuse to compromise on design.</div>
+        <a href="https://cutesycode.vercel.app/" target="_blank" class="p-link">View Project <svg width="11" height="11"
+            viewBox="0 0 12 12" fill="none">
+            <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="skills-section" id="skills">
+    <div class="reveal">
+      <div class="section-eyebrow">Arsenal</div>
+      <div class="section-heading">What I<br>Work With.</div>
+    </div>
+    <div class="skills-wrap reveal">
+      <div class="skill">Python</div>
+      <div class="skill">FastAPI</div>
+      <div class="skill">React</div>
+      <div class="skill">Node.js</div>
+      <div class="skill">JavaScript</div>
+      <div class="skill">Supabase</div>
+      <div class="skill">Firebase</div>
+      <div class="skill">LLM</div>
+      <div class="skill">Arduino</div>
+      <div class="skill">Supabase</div>
+      <div class="skill">Android</div>
+      <div class="skill">REST APIs</div>
+      <div class="skill">Git & GitHub</div>
+      <div class="skill">HTML & CSS</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-logo">Vedant Rode</div>
+    <div class="f-links">
+      <a href="https://github.com/VedantR12" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/vedant-rode-13615a239/" target="_blank">LinkedIn</a>
+      <a href="https://instagram.com/scenekyahaivedant" target="_blank">Instagram</a>
+    </div>
+    <div class="f-copy">© 2026 — Built different.</div>
+  </footer>
+
+  <script>
+    // ── CURSOR ──
+    const cur = document.getElementById('cur');
+    const ring = document.getElementById('cur-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx + 'px'; cur.style.top = my + 'px'; });
+    (function animRing() { rx += (mx - rx) * .1; ry += (my - ry) * .1; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); })();
+
+    // ── PARTICLES ──
+    const pWrap = document.getElementById('particles');
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const x = Math.random() * 100;
+      const dur = (3 + Math.random() * 4).toFixed(1) + 's';
+      const delay = (Math.random() * 6).toFixed(1) + 's';
+      const dx = ((Math.random() - 0.5) * 60).toFixed(0) + 'px';
+      p.style.cssText = `left:${x}%; bottom:${10 + Math.random() * 40}%; --dur:${dur}; --delay:${delay}; --dx:${dx};`;
+      pWrap.appendChild(p);
+    }
+
+    // ── CARD GLOW ──
+    function glow(e, el) {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    }
+
+    // ── SCROLL ENGINE ──
+    const section = document.getElementById('scroll-section');
+    const frames = [1, 2, 3, 4].map(i => document.getElementById('f' + i));
+    const texts = [1, 2, 3, 4].map(i => document.getElementById('t' + i));
+    const dots = document.querySelectorAll('.dot');
+    const prog = document.getElementById('prog');
+    const hint = document.getElementById('scroll-hint');
+    const orb2 = document.getElementById('orb-orange2');
+
+    let curPhase = 0;
+    let ticking = false;
+
+    // crossfade state
+    let fromOpacity = [1, 0, 0, 0];
+    let toOpacity = [1, 0, 0, 0];
+    let fadeAnim = null;
+    let lastPhase = 0;
+
+    function smoothFade(toPhase) {
+      if (toPhase === lastPhase) return;
+      const from = lastPhase;
+      lastPhase = toPhase;
+
+      if (fadeAnim) cancelAnimationFrame(fadeAnim);
+
+      const startTime = performance.now();
+      const duration = 600; // ms
+
+      const startOp = frames.map(f => parseFloat(f.style.opacity) || (f.classList.contains('active') ? 1 : 0));
+
+      function step(now) {
+        const t = Math.min((now - startTime) / duration, 1);
+        const ease = t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // ease in-out quad
+
+        frames.forEach((f, i) => {
+          const target = i === toPhase ? 1 : 0;
+          const op = startOp[i] + (target - startOp[i]) * ease;
+          f.style.opacity = op;
+        });
+
+        if (t < 1) fadeAnim = requestAnimationFrame(step);
+        else {
+          frames.forEach((f, i) => { f.style.opacity = i === toPhase ? 1 : 0; f.classList.toggle('active', i === toPhase); });
+        }
+      }
+      fadeAnim = requestAnimationFrame(step);
+
+      // text swap
+      texts.forEach((t, i) => t.classList.toggle('in', i === toPhase));
+
+      // dots
+      dots.forEach((d, i) => d.classList.toggle('active', i === toPhase));
+
+      // orb accent on phase 4
+      orb2.classList.toggle('active', toPhase === 3);
+    }
+
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const top = section.offsetTop;
+        const h = section.offsetHeight - window.innerHeight;
+        const scrollY = window.scrollY;
+        const p = Math.max(0, Math.min(1, (scrollY - top) / h));
+
+        prog.style.width = (p * 100) + '%';
+        hint.style.opacity = p > .03 ? '0' : '1';
+
+        const phase = Math.min(3, Math.floor(p * 4));
+        smoothFade(phase);
+
+        ticking = false;
+      });
+    }, { passive: true });
+
+    // ── DOT CLICKS ──
+    dots.forEach(d => {
+      d.addEventListener('click', () => {
+        const ph = parseInt(d.dataset.phase);
+        const top = section.offsetTop;
+        const h = section.offsetHeight - window.innerHeight;
+        window.scrollTo({ top: top + (ph / 4) * h, behavior: 'smooth' });
+      });
+    });
+
+    // ── SECTION REVEAL ON SCROLL ──
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: .12 });
+    reveals.forEach(r => observer.observe(r));
+
+    // ── PRELOAD ──
+    ['frame1.png', 'frame2.png', 'frame3.png', 'frame4.png'].forEach(src => {
+      const img = new Image(); img.src = src;
+    });
+  </script>
+</body>
+
+</html>
